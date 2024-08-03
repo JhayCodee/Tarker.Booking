@@ -36,4 +36,5 @@ namespace Tarker.Booking.Application.DataBase.Booking.Queries.GetBookingsByDocum
 
             return result;
         }
+    }
 }
