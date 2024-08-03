@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Tarker.Booking.Application.DataBase.Customer.Commands.CreateCustomer;
 using Tarker.Booking.Application.DataBase.Customer.Commands.DeleteCustomer;
 using Tarker.Booking.Application.DataBase.Customer.Commands.UpdateCustomer;
@@ -7,6 +8,7 @@ using Tarker.Booking.Application.DataBase.Customer.Queries.GetCustomerByDocument
 using Tarker.Booking.Application.DataBase.Customer.Queries.GetCustomerById;
 using Tarker.Booking.Application.Exceptions;
 using Tarker.Booking.Application.Features;
+using Tarker.Booking.Application.Validators.Customer;
 
 namespace Tarker.Booking.Api.Controllers
 {
@@ -18,9 +20,20 @@ namespace Tarker.Booking.Api.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create(
             [FromBody] CreateCustomerModel model,
-            [FromServices] ICreateCustomerCommand createCustomerCommand
+            [FromServices] ICreateCustomerCommand createCustomerCommand,
+            [FromServices] IValidator<CreateCustomerModel> validator
         )
         {
+            var validate = await validator.ValidateAsync(model);
+
+            if (!validate.IsValid) 
+            {
+                return StatusCode(
+                    StatusCodes.Status400BadRequest,
+                    ResponseApiService.Response(StatusCodes.Status400BadRequest, validate.Errors)
+                );
+            } 
+
             var data = await createCustomerCommand.Execute(model);
 
             return StatusCode(
@@ -32,9 +45,20 @@ namespace Tarker.Booking.Api.Controllers
         [HttpPut("update")]
         public async Task<IActionResult> Update(
             [FromBody] UpdateCustomerModel model,
-            [FromServices] IUpdateCustomerCommand updateCustomerCommand
+            [FromServices] IUpdateCustomerCommand updateCustomerCommand,
+        [FromServices] IValidator<UpdateCustomerModel> validator
         )
         {
+            var validate = await validator.ValidateAsync(model);
+
+            if (!validate.IsValid)
+            {
+                return StatusCode(
+                    StatusCodes.Status400BadRequest,
+                    ResponseApiService.Response(StatusCodes.Status400BadRequest, validate.Errors)
+                );
+            }
+
             var data = await updateCustomerCommand.Execute(model);
 
             return StatusCode(
