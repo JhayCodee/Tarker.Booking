@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Tarker.Booking.Application.DataBasse;
 
 namespace Tarker.Booking.Application.DataBase.Customer.Queries.GetCustomerByDocumentNumber
@@ -16,10 +15,11 @@ namespace Tarker.Booking.Application.DataBase.Customer.Queries.GetCustomerByDocu
             _mapper = mapper;
         }
 
-        public async Task<GetCustomerByDocumentNumberModel> Execute(string doumentNumber)
+        public async Task<GetCustomerByDocumentNumberModel> Execute(string documentNumber)
         {
-            var entity = _dataBaseService.Customer.FirstOrDefaultAsync(x => x.DocumentNumber == doumentNumber);
-            return _mapper.Map<GetCustomerByDocumentNumberModel>(entity);   
+            var entity = await _dataBaseService.Customer.FirstOrDefaultAsync(x => x.DocumentNumber == documentNumber);
+            return _mapper.Map<GetCustomerByDocumentNumberModel>(entity);
         }
     }
+
 }
